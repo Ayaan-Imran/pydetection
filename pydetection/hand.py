@@ -31,7 +31,6 @@ class HandRecogniser:
 
     def findHands(self, image_orginal, draw=True):
         try:
-
             # Create the hands object
             hands = self.hands
 
@@ -68,7 +67,7 @@ class HandRecogniser:
         except cv2.error:
             return image_orginal, []
 
-    def getFingerState(self, image_original, finger, hand_num = 1):
+    def getFingerState(self, image_original, finger, hand_num = 1, hand_orientation = "right"):
         # Get Hands in "original_image" along with the hand landmarks' positions
         image_processed, hand_landmarks_pos = self.findHands(image_original, draw=False)
 
@@ -121,23 +120,32 @@ class HandRecogniser:
                 finger_state = True
 
         elif finger == "thumb":
-            if hand.thumb_tip["x axis"] < hand.thumb_ip["x axis"]:
-                # Thumb is closed
-                finger_state = False
+            if hand_orientation == "right":
+                if hand.thumb_tip["x axis"] < hand.thumb_ip["x axis"]:
+                    # Thumb is closed
+                    finger_state = False
+                else:
+                    # Thumb is opened
+                    finger_state = True
+
             else:
-                # Thumb is opened
-                finger_state = True
+                if hand.thumb_tip["x axis"] > hand.thumb_ip["x axis"]:
+                    # Thumb is closed
+                    finger_state = False
+                else:
+                    # Thumb is opened
+                    finger_state = True
 
         # Return the finger state ==> True for open / False for closed
         return finger_state
 
-    def matchFingerState(self, image_original, stateList, hand_num = 1):
+    def matchFingerState(self, image_original, stateList, hand_num = 1, hand_orientation="right"):
         # Get each state of finger and save it to a list ==> fingerStates
-        thumbState = self.getFingerState(image_original, "thumb", hand_num=hand_num)
-        indexState = self.getFingerState(image_original, "index", hand_num=hand_num)
-        middleState = self.getFingerState(image_original, "middle", hand_num=hand_num)
-        ringState = self.getFingerState(image_original, "ring", hand_num=hand_num)
-        pinkyState = self.getFingerState(image_original, "pinky", hand_num=hand_num)
+        thumbState = self.getFingerState(image_original, "thumb", hand_num=hand_num, hand_orientation=hand_orientation)
+        indexState = self.getFingerState(image_original, "index", hand_num=hand_num, hand_orientation=hand_orientation)
+        middleState = self.getFingerState(image_original, "middle", hand_num=hand_num, hand_orientation=hand_orientation)
+        ringState = self.getFingerState(image_original, "ring", hand_num=hand_num, hand_orientation=hand_orientation)
+        pinkyState = self.getFingerState(image_original, "pinky", hand_num=hand_num, hand_orientation=hand_orientation)
 
         fingerStates = [thumbState, indexState, middleState, ringState, pinkyState]
 
@@ -146,6 +154,29 @@ class HandRecogniser:
 
         # Return True or False according to the match ==> result
         return result
+
+    def getHandOrientation(self, image_original, hand_num = 1):
+        # Get hands in the image
+        image, hand_landmarks_pos = self.findHands(image_original, draw=False)
+
+        # Extract the hand according to the hand number
+        try:
+            hand_landmarks_pos = hand_landmarks_pos[hand_num-1]
+        except IndexError:
+            raise ValueError("Unable to find any hands in the provided image")
+
+        # Create hand object
+        hand = Hand([hand_landmarks_pos])
+
+        # Check thumb position and decide the hand orientation ==> left or right
+        if hand.thumb_tip["x axis"] > hand.thumb_ip["x axis"]:
+            orientation = "right"
+
+        elif hand.thumb_tip["x axis"] < hand.thumb_ip["x axis"]:
+            orientation = "left"
+
+        # Return the hand orientation
+        return orientation
 
 class Hand:
     def __init__(self, hand_pos_landm):
@@ -292,3 +323,17 @@ class Hand:
                 self.pinky_tip["id"] = id
                 self.pinky_tip["x axis"] = x_axis
                 self.pinky_tip["y axis"] = y_axis
+
+recogniser = HandRecogniser(max_num_hands=1)
+webcam = cv2.VideoCapture(0)
+
+while True:
+    _, frame = webcam.read()
+
+    try:
+        print(recogniser.getFingerState(frame, "thumb", hand_orientation="left"))
+
+    except ValueError:
+        pass
+
+    cv2.waitKey(1)
