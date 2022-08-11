@@ -323,17 +323,3 @@ class Hand:
                 self.pinky_tip["id"] = id
                 self.pinky_tip["x axis"] = x_axis
                 self.pinky_tip["y axis"] = y_axis
-
-recogniser = HandRecogniser(max_num_hands=1)
-webcam = cv2.VideoCapture(0)
-
-while True:
-    _, frame = webcam.read()
-
-    try:
-        print(recogniser.getFingerState(frame, "thumb", hand_orientation="left"))
-
-    except ValueError:
-        pass
-
-    cv2.waitKey(1)
