@@ -20,7 +20,7 @@ worries to detect real life objects.
 # PyDetection - Code examples
 ### Find hands in an image
 ```python
-from pydetection import hand # The pydection module
+import pydetection as hand # The pydection module
 import cv2 # Used for displaying images (Comes installed with pydetection
 
 detector = hand.HandRecogniser() 
@@ -36,7 +36,7 @@ cv2.waitKey(5000) # Wait for 5 seconds (5000 milli seconds) so that we can see t
 
 ### Get the name of each joint in the hand
 ```python
-from pydetection import hand # The pydetection module
+import pydetection as hand # The pydetection module
 
 detector = hand.HandRecogniser() 
 image_dir = "./images/hands_image.jpg" # The image
@@ -54,7 +54,7 @@ y = handObject.thumb_tip["y axis"] # The y axis of the coordinate
 
 ### Detect hand in real time webcam footage
 ```python
-from pydetection import hand # The pydetection module
+import pydetection as hand # The pydetection module
 import cv2 # We will use this for reading and displaying webcam frames
 
 detector = hand.HandRecogniser()
@@ -75,7 +75,7 @@ while True:
 
 ### Check if the thumb is closed
 ```python
-from pydetection import hand # The pydetection module
+import pydetection as hand # The pydetection module
 
 detector = hand.HandRecogniser(max_num_hands=1) # Detect only 1 hand
 image_dir = "./images/hand_image.jpg" # The image
