@@ -4,14 +4,14 @@ try:
 except ImportError:
     print("[!!] Package 'mediapipe' is not installed:")
     print("     1. Use python version 3.7 or below.")
-    print("     2. Run this command in the terminal: pip instal mediapipe")
+    print("     2. Run this command in the terminal: pip install mediapipe")
 
 try:
     import cv2
 
 except ImportError:
     print("[!!] Package 'cv2' is not installed:")
-    print("     Run this command in the terminal: pip instal opencv-python")
+    print("     Run this command in the terminal: pip install opencv-python")
 
 class HandRecogniser:
     def __init__(self, static_image_mode=False, max_num_hands=2, model_complexity=1, min_detection_confidence=0.5, min_tracking_confidence=0.5):
